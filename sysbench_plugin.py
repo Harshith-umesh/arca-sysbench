@@ -110,6 +110,7 @@ class WorkloadError:
     """
     This is the output data structure in the error  case.
     """
+    exit_code: int
     error: str
 
 sysbench_input_schema = plugin.build_object_schema(SysbenchInputParams)
@@ -180,8 +181,7 @@ def parse_output(output):
     print("sysbench results:", sysbench_results)
     return sysbench_output,sysbench_results
 
-# The following is a decorator (starting with @). We add this in front of our function to define the metadata for our
-# step.
+# The following is a decorator (starting with @). We add this in front of our function to define the metadata for our step
 @plugin.step(
     id="sysbenchcpu",
     name="Sysbench CPU Workload",
@@ -202,16 +202,14 @@ def RunSysbenchCpu(params: SysbenchInputParams) -> typing.Tuple[str, typing.Unio
     try:
         process_out = subprocess.check_output(['sysbench','--threads'+'='+str(params.threads),params.operation,'run'], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as error:
-        return "error", WorkloadError("{} failed with return code {}:\n{}".format(error.cmd[0],error.returncode,error.output))
+        return "error", WorkloadError(error.returncode,"{} failed with return code {}:\n{}".format(error.cmd[0],error.returncode,error.output))
 
     stdoutput = process_out.strip().decode("utf-8")
     output,results = parse_output(stdoutput)
-    print(output,results)
     print("==>> Workload run complete!")
     return "success", WorkloadResultsCpu(sysbench_cpu_output_schema.unserialize(output),sysbench_cpu_results_schema.unserialize(results))
 
 
-#The following is a decorator (starting with @). We add this in front of our function to define the metadata for our step.
 @plugin.step(
     id="sysbenchmemory",
     name="Sysbench Memory Workload",
@@ -232,7 +230,7 @@ def RunSysbenchMemory(params: SysbenchInputParams) -> typing.Tuple[str, typing.U
     try:
         process_out = subprocess.check_output(['sysbench','--threads'+'='+str(params.threads),params.operation,'run'], stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as error:
-        return "error", WorkloadError("{} failed with return code {}:\n{}".format(error.cmd[0],error.returncode,error.output))
+        return "error", WorkloadError(error.returncode,"{} failed with return code {}:\n{}".format(error.cmd[0],error.returncode,error.output))
 
     stdoutput = process_out.strip().decode("utf-8")
     output,results = parse_output(stdoutput)
@@ -243,7 +241,6 @@ def RunSysbenchMemory(params: SysbenchInputParams) -> typing.Tuple[str, typing.U
 
 if __name__ == "__main__":
     sys.exit(plugin.run(plugin.build_schema(
-        # List your step functions here:
         RunSysbenchCpu,
         RunSysbenchMemory
     )))

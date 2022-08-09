@@ -49,6 +49,7 @@ class SysbenchPluginTest(unittest.TestCase):
 
         plugin.test_object_serialization(
             sysbench_plugin.WorkloadError(
+                exit_code=1,
                 error="This is an error"
             )
         )
@@ -92,6 +93,28 @@ class SysbenchPluginTest(unittest.TestCase):
         self.assertGreaterEqual(output_data.sysbench_results.Latency.sum,0)
         self.assertGreater(output_data.sysbench_results.Threadsfairness.events.avg,0)
         self.assertGreater(output_data.sysbench_results.Threadsfairness.executiontime.avg,0)
+
+    def test_parsing_function_memory(self):
+        sysbench_output = {'Numberofthreads': 2.0, 'blocksize': '1KiB', 'totalsize': '102400MiB', 'operation': 'write', 'scope': 'global', 'Totaloperations': 70040643.0, 'Totaloperationspersecond': 7003215.47, 'totaltime': 10.0001, 'totalnumberofevents': 70040643.0}
+        sysbench_results = {'transferred_MiB': 68399.07, 'transferred_MiBpersec': 6839.08, 'Latency': {'min': '0.00', 'avg': '0.00', 'max': '0.11', 'P95thpercentile': '0.00', 'sum': '13958.52'}, 'Threadsfairness': {'events': {'avg': 35020321.5, 'stddev': 955973.5}, 'executiontime': {'avg': 6.9793, 'stddev': 0.07}}}
+        with open('tests/memory_parse_output.txt', 'r') as fout:
+            mem_output = fout.read()
+
+        output,results = sysbench_plugin.parse_output(mem_output)
+        self.assertEqual(sysbench_output,output)
+        self.assertEqual(sysbench_results,results)
+
+    def test_parsing_function_cpu(self):
+        sysbench_output= {'Numberofthreads': 2.0, 'Primenumberslimit': 10000.0, 'totaltime': 10.0005, 'totalnumberofevents': 29281.0}
+        sysbench_results= {'CPUspeed': {'eventspersecond': '2927.61'}, 'Latency': {'min': '0.67', 'avg': '0.68', 'max': '1.56', 'P95thpercentile': '0.70', 'sum': '19995.74'}, 'Threadsfairness': {'events': {'avg': 14640.5, 'stddev': 1.5}, 'executiontime': {'avg': 9.9979, 'stddev': 0.0}}}
+
+        with open('tests/cpu_parse_output.txt', 'r') as fout:
+            cpu_output = fout.read()
+
+        output,results = sysbench_plugin.parse_output(cpu_output)
+        self.assertEqual(sysbench_output,output)
+        self.assertEqual(sysbench_results,results)
+ 
 
 
 if __name__ == '__main__':

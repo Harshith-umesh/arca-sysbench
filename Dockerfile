@@ -12,4 +12,4 @@ RUN /usr/local/bin/python3 test_sysbench_plugin.py
 VOLUME /config
 
 ENTRYPOINT ["/usr/local/bin/python3", "/app/sysbench_plugin.py"]
-CMD ["-f", "/config/sysbench_cpu_example.yaml", "-s", "sysbenchcpu"]
+CMD ["-f", "/config/configs/sysbench_cpu_example.yaml", "-s", "sysbenchcpu"]

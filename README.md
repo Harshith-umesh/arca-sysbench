@@ -14,5 +14,5 @@ In order to run the [sysbench plugin](sysbench_plugin.py) run the following step
 2. Create a `venv` in the current directory with `python3 -m venv $(pwd)/venv`
 3. Activate the `venv` by running `source venv/bin/activate`
 4. Run `pip install -r requirements.txt`
-5. Run `./sysbench_plugin.py -f sysbench_cpu_example.yaml -s sysbenchcpu` to run sysbench for cpu
-6. Run `./sysbench_plugin.py -f sysbench_memory_example.yaml -s sysbenchmemory` to run sysbench for memory
+5. Run `./sysbench_plugin.py -f configs/sysbench_cpu_example.yaml -s sysbenchcpu` to run sysbench for cpu
+6. Run `./sysbench_plugin.py -f configs/sysbench_memory_example.yaml -s sysbenchmemory` to run sysbench for memory
