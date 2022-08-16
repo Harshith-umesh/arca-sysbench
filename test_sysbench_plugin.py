@@ -10,8 +10,15 @@ class SysbenchPluginTest(unittest.TestCase):
     @staticmethod
     def test_serialization():
         plugin.test_object_serialization(
-            sysbench_plugin.SysbenchInputParams(
+            sysbench_plugin.SysbenchCpuInputParams(
                 operation="cpu",
+                threads=2
+            )
+        )
+
+        plugin.test_object_serialization(
+            sysbench_plugin.SysbenchMemoryInputParams(
+                operation="memory",
                 threads=2
             )
         )
@@ -25,13 +32,6 @@ class SysbenchPluginTest(unittest.TestCase):
         plugin.test_object_serialization(
             sysbench_plugin.sysbench_cpu_results_schema.unserialize(
                 {'CPUspeed': {'eventspersecond': '2639.51'}, 'Latency': {'min': '0.67', 'avg': '0.76', 'max': '1.26', 'P95thpercentile': '0.87', 'sum': '19987.57'}, 'Threadsfairness': {'events': {'avg': 13200.5, 'stddev': 17.5}, 'executiontime': {'avg': 9.9938, 'stddev': 0.0}}}
-            )
-        )
-
-        plugin.test_object_serialization(
-            sysbench_plugin.SysbenchInputParams(
-                operation="memory",
-                threads=3
             )
         )
 
@@ -55,7 +55,7 @@ class SysbenchPluginTest(unittest.TestCase):
         )
 
     def test_functional_cpu(self):
-        input = sysbench_plugin.SysbenchInputParams(
+        input = sysbench_plugin.SysbenchCpuInputParams(
             operation="cpu",
             threads=2
         )
@@ -74,7 +74,7 @@ class SysbenchPluginTest(unittest.TestCase):
         
 
     def test_functional_memory(self):
-        input = sysbench_plugin.SysbenchInputParams(
+        input = sysbench_plugin.SysbenchMemoryInputParams(
             operation="memory",
             threads=2
         )
@@ -114,7 +114,6 @@ class SysbenchPluginTest(unittest.TestCase):
         output,results = sysbench_plugin.parse_output(cpu_output)
         self.assertEqual(sysbench_output,output)
         self.assertEqual(sysbench_results,results)
- 
 
 
 if __name__ == '__main__':
